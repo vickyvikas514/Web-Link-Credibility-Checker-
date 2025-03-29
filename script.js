@@ -1,4 +1,4 @@
-const apiKey = "AIzaSyCR4cV7bODYREbJFFEynZr1WNPftZkNNN4"; // Replace with your Google Safe Browsing API key
+const apiKey = process.env.GOOGLE_SAFE_BROWSING_API_KEY || "AIzaSyCR4cV7bODYREbJFFEynZr1WNPftZkNNN4"; // Replace with your Google Safe Browsing API key
 
 document.addEventListener("DOMContentLoaded", function () {
   const verifyButton = document.getElementById("verifyButton");
