@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/i;
     if (!urlPattern.test(url)) {
-      showResult("Invalid URL format. Please enter a valid URL (e.g., http://example.com).", "result-error");
+      showResult("Invalid URL format. Please enter a valid URL.", "result-error");
       return;
     }
 
