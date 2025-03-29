@@ -1,4 +1,4 @@
-const apiKey = "AIzaSyCR4cV7bODYREbJFFEynZr1WNPftZkNNN4"; // Replace with your actual Google Safe Browsing API key // Replace with your Google Safe Browsing API key
+const apiKey = "AIzaSyCR4cV7bODYREbJFFEynZr1WNPftZkNNN4"; // Replace with your actual Google Safe Browsing API key
 
 document.addEventListener("DOMContentLoaded", function () {
   const verifyButton = document.getElementById("verifyButton");
@@ -156,7 +156,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Verify button logic
   if (verifyButton) {
     console.log("Verify button found!");
-    verifyButton.addEventListener("click", checkUrlSafety);
+    verifyButton.addEventListener("click", (event) => {
+      event.stopPropagation(); // Prevent the click from immediately hiding the popup
+      checkUrlSafety();
+    });
   } else {
     console.error("Verify button not found!");
   }
@@ -164,6 +167,15 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add input event listener to hide result when URL is cleared
   urlInput.addEventListener("input", function() {
     if (!this.value.trim()) {
+      result.classList.remove("show");
+      result.innerHTML = "";
+    }
+  });
+
+  // Hide the result popup when clicking anywhere on the screen
+  document.addEventListener("click", function(event) {
+    // Only hide the popup if it's visible
+    if (result.classList.contains("show")) {
       result.classList.remove("show");
       result.innerHTML = "";
     }
@@ -183,6 +195,9 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    // Reset the popup before showing the "Loading..." state
+    result.classList.remove("show");
+    result.innerHTML = "";
     showResult("Checking...", "result-checking");
     result.classList.add("show");
 
