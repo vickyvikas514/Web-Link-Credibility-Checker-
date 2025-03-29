@@ -1,0 +1,111 @@
+:where([class^="ri-"])::before {
+  content: "\f3c2";
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #0A1A2F; /* Dark blue gradient background */
+}
+
+/* Canvas */
+#spiderWebCanvas {
+  opacity: 0.8; /* Slightly more visible */
+}
+
+/* Hero Section */
+.webguardian-hero {
+  position: relative;
+}
+
+/* Input and Button */
+.webguardian-url-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.webguardian-verify-btn {
+  transform: translateY(0);
+}
+
+.webguardian-verify-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Result Popup */
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.webguardian-result {
+  display: none;
+}
+
+.webguardian-result.show {
+  display: block;
+  background-color: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid #374151;
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.3s ease-out;
+}
+
+/* Navigation */
+.webguardian-nav {
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #3B82F6;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Features Section */
+.feature-icon {
+  transition: transform 0.3s ease;
+}
+
+.webguardian-feature-card:hover .feature-icon {
+  transform: scale(1.2);
+}
+
+/* Education Section */
+.webguardian-threat-card, .webguardian-tip-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.webguardian-threat-card:hover, .webguardian-tip-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Contact Section */
+.webguardian-submit-btn {
+  transition: all 0.3s ease;
+}
+
+/* Footer */
+.social-icon {
+  transition: all 0.3s ease;
+}
