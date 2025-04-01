@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thank You - WebGuardian</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
+    <style>
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .float-animation {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .pulse-animation {
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+
+      .fade-in-delayed {
+        animation: fadeIn 0.8s ease-out 0.3s forwards;
+        opacity: 0;
+      }
+
+      .fade-in-more-delayed {
+        animation: fadeIn 0.8s ease-out 0.6s forwards;
+        opacity: 0;
+      }
+
+      #spiderWebCanvas {
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 min-h-screen font-poppins relative">
+    <canvas id="spiderWebCanvas" class="absolute inset-0 z-0 pointer-events-none"></canvas>
+    
+    <nav class="webguardian-nav fixed w-full bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 z-50 shadow-md">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <a href="index.html" class="text-3xl font-['Pacifico'] text-primary hover:text-blue-400 transition-colors">WebGuardian</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-12 relative z-10">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="bg-gray-800/50 rounded-2xl p-8 border border-gray-700 shadow-xl backdrop-blur-sm">
+          <div class="relative mb-8 fade-in">
+            <div class="w-24 h-24 bg-primary/20 rounded-full mx-auto flex items-center justify-center float-animation">
+              <i class="ri-checkbox-circle-line text-5xl text-primary"></i>
+            </div>
+            <div class="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <i class="ri-check-line text-white text-sm"></i>
+            </div>
+          </div>
+          
+          <h1 class="text-4xl font-bold mb-4 text-white fade-in-delayed">Thank You!</h1>
+          <p class="text-xl text-gray-300 mb-8 fade-in-delayed">
+            Your message has been sent successfully. We'll get back to you soon.
+          </p>
+          
+          <div class="space-y-4 fade-in-more-delayed">
+            <a 
+              href="index.html" 
+              class="inline-flex items-center justify-center bg-primary text-white px-8 py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 pulse-animation"
+            >
+              <i class="ri-home-line mr-2"></i>
+              Return to Home
+            </a>
+            
+            <div class="text-gray-400 text-sm mt-6">
+              <p>Didn't mean to send a message?</p>
+              <a href="index.html" class="text-primary hover:text-blue-400 transition-colors">
+                Go back to the homepage
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="webguardian-footer bg-gray-900/95 border-t border-gray-800 py-6 fixed bottom-0 w-full backdrop-blur-sm">
+      <div class="container mx-auto px-6 text-center text-gray-400">
+        <p>© 2025 WebGuardian. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Particle network animation
+      const canvas = document.getElementById("spiderWebCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set canvas size
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      // Particle network variables
+      const particles = [];
+      const numParticles = 150;
+      const maxDistance = 100;
+      const maxConnections = 4;
+      let mouseX = -9999;
+      let mouseY = -9999;
+
+      // Initialize particles
+      function initParticles() {
+        for (let i = 0; i < numParticles; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            baseX: Math.random() * canvas.width,
+            baseY: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            color: Math.random() > 0.5 ? "#00DDEB" : "#FF007A",
+            connections: []
+          });
+        }
+      }
+      initParticles();
+
+      // Track mouse movement
+      document.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      });
+
+      // Update connections
+      function updateConnections() {
+        for (let i = 0; i < particles.length; i++) {
+          const p1 = particles[i];
+          p1.connections = [];
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < maxDistance) {
+              p1.connections.push({ particle: p2, distance });
+              p2.connections.push({ particle: p1, distance });
+            }
+          }
+
+          p1.connections.sort((a, b) => a.distance - b.distance);
+          p1.connections = p1.connections.slice(0, maxConnections);
+        }
+      }
+
+      // Draw network
+      function drawNetwork() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update particle positions
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 300) {
+            const force = (1 - distance / 300) * 0.6;
+            const angle = Math.atan2(dy, dx);
+            p.vx += Math.cos(angle) * force;
+            p.vy += Math.sin(angle) * force;
+            
+            const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+            if (speed > 1.5) {
+              p.vx = (p.vx / speed) * 1.5;
+              p.vy = (p.vy / speed) * 1.5;
+            }
+          }
+
+          p.x += (p.baseX - p.x) * 0.01;
+          p.y += (p.baseY - p.y) * 0.01;
+        }
+
+        updateConnections();
+
+        // Draw connections and particles
+        for (let i = 0; i < particles.length; i++) {
+          const p1 = particles[i];
+          
+          for (let j = 0; j < p1.connections.length; j++) {
+            const conn = p1.connections[j];
+            const p2 = conn.particle;
+            const opacity = (1 - conn.distance / maxDistance) * 0.7;
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(${p1.color === "#00DDEB" ? "0, 221, 235" : "255, 0, 122"}, ${opacity})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+
+          ctx.beginPath();
+          ctx.arc(p1.x, p1.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = p1.color;
+          ctx.fill();
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = p1.color;
+        }
+
+        ctx.shadowBlur = 0;
+      }
+
+      // Animation loop
+      let lastFrameTime = 0;
+      const targetFPS = 60;
+      const frameInterval = 1000 / targetFPS;
+
+      function animate(currentTime) {
+        if (currentTime - lastFrameTime >= frameInterval) {
+          drawNetwork();
+          lastFrameTime = currentTime;
+        }
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html> 

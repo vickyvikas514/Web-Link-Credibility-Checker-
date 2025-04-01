@@ -158,17 +158,32 @@
         <div class="max-w-2xl mx-auto text-center">
           <h2 class="text-4xl font-bold mb-8 text-white">Get in Touch</h2>
           <p class="text-gray-300 mb-12 font-medium">Have questions about WebGuardian? We're here to help!</p>
-          <form class="space-y-6">
+          <form id="contactForm" class="space-y-6 relative" action="https://formsubmit.co/210106070@hbtu.ac.in" method="POST">
+            <div id="loadingOverlay" class="hidden absolute inset-0 bg-gray-900/80 backdrop-blur-sm rounded-xl flex items-center justify-center z-50">
+              <div class="text-center">
+                <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p class="text-white text-lg">Sending your message...</p>
+              </div>
+            </div>
             <input
               type="email"
+              name="email"
               placeholder="Your email address"
+              required
               class="w-full px-6 py-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 shadow-md"
             />
             <textarea
+              name="message"
               placeholder="Your message"
+              required
               rows="4"
               class="w-full px-6 py-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 shadow-md"
             ></textarea>
+            <input type="hidden" name="_subject" value="WebGuardian Feedback">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_next" value="thank-you.html">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_autoresponse" value="Thank you for your message! We'll get back to you soon.">
             <button
               type="submit"
               class="webguardian-submit-btn bg-primary text-white px-8 py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
@@ -187,13 +202,13 @@
             <p class="text-gray-400 mt-2">Protecting your online safety</p>
           </div>
           <div class="flex space-x-6">
-            <a href="#" class="social-icon text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-125">
+            <a href="https://twitter.com/vickyvikas514" target="_blank" class="social-icon text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-125">
               <i class="ri-twitter-line text-xl"></i>
             </a>
-            <a href="#" class="social-icon text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-125">
+            <a href="https://github.com/vickyvikas514" target="_blank" class="social-icon text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-125">
               <i class="ri-github-line text-xl"></i>
             </a>
-            <a href="#" class="social-icon text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-125">
+            <a href="https://linkedin.com/in/vickyvikas514" target="_blank" class="social-icon text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-125">
               <i class="ri-linkedin-line text-xl"></i>
             </a>
           </div>

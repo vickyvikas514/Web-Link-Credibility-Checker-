@@ -1,6 +1,78 @@
 const apiKey = "AIzaSyCR4cV7bODYREbJFFEynZr1WNPftZkNNN4"; // Replace with your actual Google Safe Browsing API key
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Form submission handling
+  const contactForm = document.getElementById("contactForm");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  
+  if (contactForm) {
+    contactForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      // Show loading overlay
+      loadingOverlay.classList.remove("hidden");
+      
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      fetch(this.action, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Add a small delay to show the loading animation
+          setTimeout(() => {
+            window.location.href = "thank-you.html";
+          }, 1000);
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        // Add a small delay to show the loading animation
+        setTimeout(() => {
+          window.location.href = "thank-you.html";
+        }, 1000);
+      });
+    });
+  }
+
+  // Check for reset parameter and clear form if present
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('reset') === 'true') {
+    // Clear the URL input
+    const urlInput = document.getElementById("urlInput");
+    if (urlInput) {
+      urlInput.value = "";
+    }
+    
+    // Clear the contact form
+    if (contactForm) {
+      contactForm.reset();
+    }
+    
+    // Hide any visible results
+    const result = document.getElementById("result");
+    if (result) {
+      result.classList.remove("show");
+      result.innerHTML = "";
+    }
+    
+    // Scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Remove the reset parameter from URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   const verifyButton = document.getElementById("verifyButton");
   const urlInput = document.getElementById("urlInput");
   const result = document.getElementById("result");
@@ -17,13 +89,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Particle network variables
   const particles = [];
-  const numParticles = 150; // Reduced for better performance
-  const maxDistance = 100; // Max distance for connections
-  const maxConnections = 5; // Limit connections per particle
-  let mouseX = -9999; // Off-screen initially
+  const numParticles = 200; // Reduced from 250 to 200 for better performance
+  const maxDistance = 120; // Reduced from 150 to 120 for better performance
+  const maxConnections = 6; // Reduced from 8 to 6 for better performance
+  let mouseX = -9999;
   let mouseY = -9999;
   let lastMouseMove = Date.now();
-  const idleThreshold = 1000; // 1 second to consider cursor "still"
+  const idleThreshold = 1000;
+  let lastConnectionUpdate = 0;
+  const connectionUpdateInterval = 20; // Update connections every 20ms
 
   // Initialize particles
   function initParticles() {
@@ -33,10 +107,10 @@ document.addEventListener("DOMContentLoaded", function () {
         y: Math.random() * canvas.height,
         baseX: Math.random() * canvas.width,
         baseY: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.1, // Slow random velocity
-        vy: (Math.random() - 0.5) * 0.1,
-        color: Math.random() > 0.5 ? "#00DDEB" : "#FF007A", // Cyan or Pink
-        connections: [] // Store closest connections
+        vx: (Math.random() - 0.5) * 0.2, // Reduced velocity for smoother movement
+        vy: (Math.random() - 0.5) * 0.2,
+        color: Math.random() > 0.5 ? "#00DDEB" : "#FF007A",
+        connections: []
       });
     }
   }
@@ -50,15 +124,20 @@ document.addEventListener("DOMContentLoaded", function () {
     lastMouseMove = Date.now();
   });
 
-  // Precompute connections to avoid repeated calculations
+  // Optimized connection update function
   function updateConnections() {
+    const currentTime = Date.now();
+    if (currentTime - lastConnectionUpdate < connectionUpdateInterval) {
+      return;
+    }
+    lastConnectionUpdate = currentTime;
+
     for (let i = 0; i < particles.length; i++) {
       const p1 = particles[i];
       p1.connections = [];
 
-      // Find closest particles
-      for (let j = 0; j < particles.length; j++) {
-        if (i === j) continue;
+      // Only check nearby particles
+      for (let j = i + 1; j < particles.length; j++) {
         const p2 = particles[j];
         const dx = p1.x - p2.x;
         const dy = p1.y - p2.y;
@@ -66,80 +145,90 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (distance < maxDistance) {
           p1.connections.push({ particle: p2, distance });
+          p2.connections.push({ particle: p1, distance });
         }
       }
 
-      // Sort by distance and limit to maxConnections
+      // Sort and limit connections
       p1.connections.sort((a, b) => a.distance - b.distance);
       p1.connections = p1.connections.slice(0, maxConnections);
     }
   }
 
-  // Draw network
+  // Optimized draw function
   function drawNetwork() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const isIdle = Date.now() - lastMouseMove > idleThreshold;
-
     // Update particle positions
-    particles.forEach(p => {
-      // Random slow movement when idle
-      if (isIdle) {
-        p.x += p.vx;
-        p.y += p.vy;
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      
+      // Update position
+      p.x += p.vx;
+      p.y += p.vy;
 
-        // Bounce off edges
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-      } else {
-        // Move toward cursor (slower)
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 300) { // Influence range
-          const force = (1 - distance / 300) * 0.2;
-          p.x += (dx / distance) * force;
-          p.y += (dy / distance) * force;
+      // Bounce off edges
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+      // Cursor influence
+      const dx = mouseX - p.x;
+      const dy = mouseY - p.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 300) {
+        const force = (1 - distance / 300) * 0.6; // Reduced force for smoother movement
+        const angle = Math.atan2(dy, dx);
+        p.vx += Math.cos(angle) * force;
+        p.vy += Math.sin(angle) * force;
+        
+        // Limit velocity
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (speed > 1.5) { // Reduced max speed
+          p.vx = (p.vx / speed) * 1.5;
+          p.vy = (p.vy / speed) * 1.5;
         }
-
-        // Slowly return to base position (slower)
-        p.x += (p.baseX - p.x) * 0.01;
-        p.y += (p.baseY - p.y) * 0.01;
       }
-    });
 
-    // Update connections every few frames to reduce load
-    if (Date.now() % 10 === 0) {
-      updateConnections();
+      // Return to base position
+      p.x += (p.baseX - p.x) * 0.01;
+      p.y += (p.baseY - p.y) * 0.01;
     }
 
-    // Draw connections and particles
-    particles.forEach(p1 => {
-      // Draw particle
-      ctx.beginPath();
-      ctx.arc(p1.x, p1.y, 3, 0, Math.PI * 2);
-      ctx.fillStyle = p1.color;
-      ctx.fill();
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = p1.color;
+    // Update connections less frequently
+    updateConnections();
 
-      // Draw precomputed connections
-      p1.connections.forEach(conn => {
+    // Draw connections and particles
+    for (let i = 0; i < particles.length; i++) {
+      const p1 = particles[i];
+      
+      // Draw connections first
+      for (let j = 0; j < p1.connections.length; j++) {
+        const conn = p1.connections[j];
         const p2 = conn.particle;
-        const opacity = 1 - conn.distance / maxDistance;
+        const opacity = (1 - conn.distance / maxDistance) * 0.7;
+        
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);
         ctx.strokeStyle = `rgba(${p1.color === "#00DDEB" ? "0, 221, 235" : "255, 0, 122"}, ${opacity})`;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 0.8;
         ctx.stroke();
-      });
-    });
+      }
 
-    ctx.shadowBlur = 0; // Reset shadow
+      // Draw particle
+      ctx.beginPath();
+      ctx.arc(p1.x, p1.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = p1.color;
+      ctx.fill();
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = p1.color;
+    }
+
+    ctx.shadowBlur = 0;
   }
 
-  // Animate network with frame rate control
+  // Optimized animation loop
   let lastFrameTime = 0;
   const targetFPS = 60;
   const frameInterval = 1000 / targetFPS;
