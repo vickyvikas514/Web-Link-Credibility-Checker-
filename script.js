@@ -1,4 +1,4 @@
-const apiKey = "AIzaSyCR4cV7bODYREbJFFEynZr1WNPftZkNNN4"; // Replace with your actual Google Safe Browsing API key
+const apiKey = "AIzaSyBjDuPwAgihQaZLAIayw81UuPT194vtLz4"; // Fast API
 
 document.addEventListener("DOMContentLoaded", function () {
   // Form submission handling
